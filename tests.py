@@ -77,3 +77,22 @@ class MyXrangeTest(TestCase):
 
         self.assertEqual(correct_vals, gen_vals, 'Generator return incorrect values {0} expect {1}'
                          .format(gen_vals, correct_vals))
+
+
+class MyZipTest(TestCase):
+    def test_exception_on_non_iterable_value(self):
+        self.assertRaises(TypeError, testTask.my_zip, 123)
+
+    def test_zip_without_args(self):
+        retval = testTask.my_zip()
+        self.assertTrue(isinstance(retval, types.ListType) and len(retval) == 0)
+
+    def test_zip_with_one_arg(self):
+        retval = testTask.my_zip('123')
+        self.assertTrue(isinstance(retval, types.ListType) and len(retval) == 1 and
+            isinstance(retval[0], types.TupleType) and len(retval[0]) == 3)
+
+    def test_zip_with_several_args(self):
+        retval = testTask.my_zip('123', '12345')
+        self.assertTrue(isinstance(retval, types.ListType) and len(retval) == 3 and
+            isinstance(retval[0], types.TupleType) and len(retval[0]) == 2)
