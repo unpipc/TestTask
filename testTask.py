@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import collections
+import types
 
 def infinite_yield(ret_val=1):
     """
@@ -59,3 +60,45 @@ def my_zip(*args):
         i += 1
 
     return result
+
+
+#list comprehension
+def square_list(i_list):
+    """
+    Возвращает список квадратов чисел
+    """
+    if not isinstance(i_list, types.ListType):
+            raise TypeError('i_list arg must by type of List')
+
+    for el in i_list:
+        if not isinstance(el, (int, float)):
+            raise TypeError('Expect numbers in input list')
+
+    return [x**2 for x in i_list]
+
+def every_second_in_list(i_list):
+    """
+    Возвращает каждый второй элемент списка
+    (наверное, имелось ввиду четные элементы списка)
+    """
+    if not isinstance(i_list, types.ListType):
+            raise TypeError('i_list arg must by type of List')
+
+    for el in i_list:
+        if not isinstance(el, (int, float)):
+            raise TypeError('Expect numbers in input list')
+
+    return [x for i, x in enumerate(i_list) if i % 2]
+
+def list_comprehension_ex3(i_list):
+    """
+    Возвращает Квадраты чётных элементов на нечётных позициях
+    """
+    if not isinstance(i_list, types.ListType):
+            raise TypeError('i_list arg must by type of List')
+
+    for el in i_list:
+        if not isinstance(el, (int, float)):
+            raise TypeError('Expect numbers in input list')
+
+    return [x**2 for i, x in enumerate(i_list) if not i % 2 and x % 2 == 0]
