@@ -21,6 +21,9 @@ def my_xrange(start, stop, step=1):
     if step == 0:
         raise ValueError('arg 3 must not be zero')
 
+    #REVIEW: В целом, стандартный подход.
+    # В качестве развития можно попробовать унифицировать и упростить код с помощью 
+    # функций-операторов: operator.le, operator.gt
     current = start
     if start < stop and step > 0:
         while current < stop:
@@ -37,26 +40,37 @@ def my_xrange(start, stop, step=1):
 def my_zip(*args):
     """
     Реализация zip
+    #REVIEW: Функция не работает с генераторами. В принципе, это уже заметно 
+    за счёт инструкции len().
     """
     for i, arg in enumerate(args):
+        #REVIEW: Хотя, судя по всему, намерение использовать любые Iterable всё же было:
+
         if not isinstance(arg, collections.Iterable):
             raise TypeError('zip argument #{0} must support iteration'.format(i+1))
 
     if len(args) == 0:
+        #REVIEW: Этот случай вырожденный; вроде бы незачем повторять код, когда 
+        # всё равно далее надо будет писать код для общего случая.
         return list()
 
     if len(args) == 1:
+        #REVIEW: тоже вырожденный случай.
         result = []
         result.append(tuple(args[0]))
-        return result
+        return result #REVIEW: В любом случае, проще было бы написать return [(args[0],)]
 
     result = []
     i = 0
+    #REVIEW: В питоне принято использовать enumerate() для нумерации элементов Iterable,
+    # или range()/xrange() для организации счётчиков. for i in xrange(len(min(args, key=len))):
     while i < len(min(args, key=len)):
         element = []
         for arg in args:
             element.append(arg[i])
         result.append(tuple(element))
+        #REVIEW: массив заполнять всё же лучше с помощью list comprehension. Здесь вроде бы ничего
+        # не мешает.
         i += 1
 
     return result
