@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import collections
 import types
+import operator
 
 def infinite_yield(ret_val=1):
     """
@@ -23,15 +24,15 @@ def my_xrange(start, stop, step=1):
 
     current = start
     if start < stop and step > 0:
-        while current < stop:
-            yield current
-            current += step
+        oper = operator.lt
     elif start > stop and step < 0:
-        while current > stop:
-            yield current
-            current += step
+        oper = operator.gt
     else:
         raise StopIteration
+
+    while oper(current, stop):
+            yield current
+            current += step
 
 
 def my_zip(*args):
@@ -43,21 +44,14 @@ def my_zip(*args):
             raise TypeError('zip argument #{0} must support iteration'.format(i+1))
 
     if len(args) == 0:
-        return list()
-
-    if len(args) == 1:
-        result = []
-        result.append(tuple(args[0]))
-        return result
+        return []
 
     result = []
-    i = 0
-    while i < len(min(args, key=len)):
-        element = []
-        for arg in args:
-            element.append(arg[i])
-        result.append(tuple(element))
-        i += 1
+    iter_list = [iter(arg) for arg in args]
+    try:
+        while True:
+            result.append(tuple([el.next() for el in iter_list]))
+    except StopIteration: None
 
     return result
 

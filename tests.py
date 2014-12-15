@@ -89,8 +89,8 @@ class MyZipTest(TestCase):
 
     def test_zip_with_one_arg(self):
         retval = testTask.my_zip('123')
-        self.assertTrue(isinstance(retval, types.ListType) and len(retval) == 1 and
-            isinstance(retval[0], types.TupleType) and len(retval[0]) == 3)
+        self.assertTrue(isinstance(retval, types.ListType) and len(retval) == 3 and
+            isinstance(retval[0], types.TupleType) and len(retval[0]) == 1)
 
     def test_zip_with_several_args(self):
         retval = testTask.my_zip('123', '12345')
