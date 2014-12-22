@@ -1,4 +1,26 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+#REVIEW Общие замечания
+#
+# 1. Во-первых, работает только отчасти:
+#sergey@sergey-VirtualBox:~/akuzyaev/test_task$ ./flight_schedule.py FRA VIE 2014-12-29 2014-12-31
+#
+#start/end   Stops   FlyDeal  FlyClassic  FlyFlex   flight duration
+#06:55/10:05  1  17,101.00   17,716.00   27,811.00   03:10  
+#06:55/16:05  1  15,571.00   16,186.00   27,811.00   09:10  
+#07:25/14:05  1  25,439.00   26,049.00   28,879.00   06:40  
+#08:25/16:05  1  17,101.00   17,716.00   27,811.00   07:40  
+#Traceback (most recent call last):
+#  File "./flight_schedule.py", line 96, in <module>
+#    fly_deal = td_list[2].find_class('lowest').pop().text_content()
+#IndexError: pop from empty list
+#
+# 2. Хотелось бы, конечно, более структурного подхода к программированию. Например, завести пару служебных 
+# функций, чтоб не дублировать код, класс Flight для хранения данных о полёте, etc.
+#
+# 3. Ожидал увидеть работу с xpath-выражениями.
+
 
 import sys
 import requests
@@ -10,6 +32,7 @@ if len(sys.argv) < 4 or len(sys.argv) > 5:
     raise SystemExit(1)
 
 iata_from = sys.argv[1]
+#REVIEW. Напрашивается функция для проверки кода IATA, например is_iata().
 if not re.match('^[A-Z]{3}$', iata_from):
     print 'first arg must contain IATA code (3 capital letter)'
     raise SystemExit(1)
@@ -51,6 +74,7 @@ payload = {'departure': iata_from, 'destination': iata_to, 'outboundDate': outbo
 response = session.get('http://www.flyniki.com/en-RU/booking/flight/vacancy.php', params=payload)
 
 
+#REVIEW. Нечитаемая конструкция получилась. Лучшее форматирование, возможно, не помешало бы.
 ajax_data = u'_ajax%5Btemplates%5D%5B%5D=form&_ajax%5Btemplates%5D%5B%5D=main&_ajax%5B' \
        u'templates%5D%5B%5D=priceoverview&_ajax%5Btemplates%5D%5B%5D=infos&_ajax%5B' \
        u'requestParams%5D%5Bdeparture%5D={0}&_ajax%5BrequestParams%5D%5B' \
@@ -67,6 +91,7 @@ headers = {'Referer': response.url,
 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
 #Отправляем Post запрос для получения конечных данных
+#REVIEW. Можно прямо тут писать session.post(...).json(), раз сам response не нужен.
 response = session.post(response.url, data=ajax_data, headers=headers)
 
 #Парсим полученный ответ
@@ -75,10 +100,12 @@ response_json = response.json()
 html_page = html.document_fromstring(response_json['templates']['main'])
 
 tables = html_page.find_class('outbound block').pop().find_class('flighttable')
+#REVIEW. Лучше завести более понятный флаг типа полёта, чем проверка длины строки даты возврата.
 if len(return_date) > 0:
     tables.append(html_page.find_class('return block').pop().find_class('flighttable'))
 
 for table in tables:
+    #REVIEW. Iterable можно превратить в список конструкцией list(iterable), например, list(table)[1:]
     tbody = [el for el in table][1:]
     if len(tbody) == 0:
         continue
